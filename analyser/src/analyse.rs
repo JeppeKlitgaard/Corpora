@@ -1,14 +1,106 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, collections::HashMap};
 
 use crate::io::load_wortschatz_archive_sentences;
-use crate::objects::NGrams;
-use counter::Counter;
+use crate::objects::{NGrams, SortedNGrams, NGram};
 use eyre::Report;
 use indexmap::IndexMap;
 use itertools::Itertools;
 use rayon::prelude::*;
-use sliding_windows::{IterExt, Storage};
 use unicode_segmentation::UnicodeSegmentation;
+use std::sync::Mutex;
+use linya::{Bar, Progress};
+
+
+pub fn analyse(sentences: &Vec<String>, ngram_ns: Vec<u8>) -> SortedNGrams {
+    // let ngram_counters = ngram_ns.into_par_iter().map(|n| {
+        // let ngram: Vec<String> = sentences
+        //     .iter()
+        //     .map(|sentence| {
+            //         // let mut storage = Storage::new(n.into());
+            //         sentence
+            //             .graphemes(true)
+            //             // .sliding_windows(&mut storage)
+            //             // .map(|win| win.iter().join(""))
+            //             .collect::<Vec<_>>()
+            //     })
+            //     .flatten()
+    //     .map(|x| x.to_owned())
+    //     .collect();
+    let progress = Mutex::new(Progress::new());
+    let bar: Bar = progress.lock().unwrap().bar(sentences.len(), format!("Processing: "));
+
+    let ngrams: NGrams = sentences
+        .par_iter()
+        .fold(
+            || NGrams::new(),
+            |mut ngrams: NGrams, sentence: &String| {
+                ngram_ns.iter().for_each(|n| {
+                    let graphemes = sentence.graphemes(true).collect::<Vec<_>>();
+
+                    let windows = graphemes.windows(*n as usize);
+
+                    let grams = windows
+                        .into_iter()
+                        .map(|x| x.to_vec().into_iter().map(|x| x.to_owned()).collect());
+
+                    ngrams.entry(*n).or_default().update(grams);
+                });
+
+                progress.lock().unwrap().inc_and_draw(&bar, 1);
+
+                ngrams
+            },
+        )
+        .reduce(
+            || NGrams::new(),
+            |mut ngrams1: NGrams, mut ngrams2: NGrams| {
+                let keys: Vec<_> = ngrams1.keys().chain(ngrams2.keys()).unique().cloned().collect();
+
+                for key in keys {
+                    let entry1 = ngrams1.entry(key).or_default();
+                    let entry2 = ngrams2.entry(key).or_default();
+
+                    *entry1 += entry2.clone();
+                }
+
+                ngrams1
+            }
+        );
+
+
+    //     .into_iter()
+    //     .map(|sentence| sentence.graphemes(true).collect::<Vec<&str>>())
+    //     .flatten()
+    //     .collect::<Vec<&str>>()
+    //     .par_windows(n.into())
+    //     // .map(|x| x.to_owned())
+    //     .chunks(100)
+    //     .flatten()
+    //     .map(|x| Counter::from_iter(x.into_iter().map(|x| *x)))
+    //     .reduce(|| Counter::<&str>::new(), |acc, e| acc + e);
+    // // .flatten();
+
+    // // let ngram: Counter<String> = ngram.collect();
+    // (n, ngram)
+
+    // Sort ngrams
+    let ngrams = ngrams
+        .into_par_iter()
+        .map(|(n, counter)| {
+            let mut indexed_ngram: IndexMap<String, usize> = counter
+                .into_iter()
+                .map(|(gram, count)| (gram.to_owned(), count))
+                .collect();
+
+            indexed_ngram.sort_by(|_k1, v1, _k2, v2| v1.cmp(v2).reverse());
+            (n, indexed_ngram)
+        })
+        .collect();
+
+    ngrams
+
+    // ngrams
+}
 
 // pub fn analyse(sentences: &Vec<String>, ngram_ns: Vec<u8>) -> NGrams {
 //     let ngram_counters = ngram_ns.into_par_iter().map(|n| {
@@ -59,39 +151,68 @@ use unicode_segmentation::UnicodeSegmentation;
 //     ngrams
 // }
 
-pub fn analyse(sentences: &Vec<String>, ngram_ns: Vec<u8>) -> NGrams {
-    let ngram_counters = ngram_ns.into_par_iter().map(|n| {
-        let ngram = sentences
-            .iter()
-            .map(|sentence| {
-                let mut storage = Storage::new(n.into());
-                sentence
-                    .graphemes(true)
-                    .sliding_windows(&mut storage)
-                    .map(|win| win.iter().join(""))
-                    .collect::<Vec<_>>()
-            })
-            .flatten();
+// pub fn analyse(sentences: &Vec<String>, ngram_ns: Vec<u8>, threads: u8) -> NGrams {
+//     let ngram_counters = ngram_ns.into_par_iter().map(|n| {
+//         let ngram = sentences
+//             .iter()
+//             .map(|sentence| {
+//                 let mut storage = Storage::new(n.into());
+//                 sentence
+//                     .graphemes(true)
+//                     .sliding_windows(&mut storage)
+//                     .map(|win| win.iter().join(""))
+//                     .collect::<Vec<_>>()
+//             })
+//             .flatten();
 
-        let ngram: Counter<String> = ngram.collect();
-        (n, ngram)
-    });
+//         let ngram: Counter<String> = ngram.collect();
+//         (n, ngram)
+//     });
 
-    let ngrams = ngram_counters
-        .map(|(n, counter)| {
-            let mut indexed_ngram: IndexMap<String, usize> = counter.into_iter().collect();
-            indexed_ngram.sort_by(|_k1, v1, _k2, v2| v1.cmp(v2).reverse());
-            (n, indexed_ngram)
-        })
-        .collect();
+//     let ngrams = ngram_counters
+//         .map(|(n, counter)| {
+//             let mut indexed_ngram: IndexMap<String, usize> = counter.into_iter().collect();
+//             indexed_ngram.sort_by(|_k1, v1, _k2, v2| v1.cmp(v2).reverse());
+//             (n, indexed_ngram)
+//         })
+//         .collect();
 
-    ngrams
-}
+//     ngrams
+// }
+
+// pub fn analyse(sentences: &Vec<String>, ngram_ns: Vec<u8>) -> NGrams {
+//     let ngram_counters = ngram_ns.into_par_iter().map(|n| {
+//         let ngram = sentences
+//             .iter()
+//             .map(|sentence| {
+//                 let mut storage = Storage::new(n.into());
+//                 sentence
+//                     .graphemes(true)
+//                     .sliding_windows(&mut storage)
+//                     .map(|win| win.iter().join(""))
+//                     .collect::<Vec<_>>()
+//             })
+//             .flatten();
+
+//         let ngram: Counter<String> = ngram.collect();
+//         (n, ngram)
+//     });
+
+//     let ngrams = ngram_counters
+//         .map(|(n, counter)| {
+//             let mut indexed_ngram: IndexMap<String, usize> = counter.into_iter().collect();
+//             indexed_ngram.sort_by(|_k1, v1, _k2, v2| v1.cmp(v2).reverse());
+//             (n, indexed_ngram)
+//         })
+//         .collect();
+
+//     ngrams
+// }
 
 pub fn analyse_wortschatz(
     archive_paths: Vec<PathBuf>,
     ngram_ns: Vec<u8>,
-) -> Result<NGrams, Report> {
+) -> Result<SortedNGrams, Report> {
     let nested_sentences: Result<Vec<Vec<String>>, Report> = archive_paths
         .par_iter()
         .map(|path| {

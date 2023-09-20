@@ -30,3 +30,5 @@ indexmap = { version = "2.0.0", features = ["rayon"] }
 sliding_windows = "3.0.0"
 thiserror = "1.0.48"
 eyre = { version = "0.6.8", features = ["pyo3"] }
+crossbeam = "0.8.2"
+linya = "0.3.0"

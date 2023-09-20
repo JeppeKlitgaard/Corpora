@@ -2,15 +2,12 @@ use std::path::PathBuf;
 
 use pyo3::types::PyModule;
 use pyo3::{pyfunction, PyResult, wrap_pyfunction, pymodule, Python};
-use crate::objects::NGrams;
-use eyre::Report;
+use crate::objects::NGramsPython;
 use crate::analyse as analyse_mod;
-use crate::io::load_wortschatz_archive_sentences;
-use rayon::prelude::*;
 
 
 #[pyfunction]
-fn analyse(sentences: Vec<String>, ngram_ns: Vec<u8>) -> PyResult<NGrams> {
+fn analyse(sentences: Vec<String>, ngram_ns: Vec<u8>) -> PyResult<NGramsPython> {
     let ngrams = analyse_mod::analyse(&sentences, ngram_ns);
 
     Ok(ngrams)
@@ -41,7 +38,7 @@ fn analyse(sentences: Vec<String>, ngram_ns: Vec<u8>) -> PyResult<NGrams> {
 // }
 
 #[pyfunction]
-fn analyse_wortschatz(archive_paths: Vec<PathBuf>, ngram_ns: Vec<u8>) -> PyResult<NGrams> {
+fn analyse_wortschatz(archive_paths: Vec<PathBuf>, ngram_ns: Vec<u8>) -> PyResult<NGramsPython> {
     Ok(analyse_mod::analyse_wortschatz(archive_paths, ngram_ns)?)
 }
 
