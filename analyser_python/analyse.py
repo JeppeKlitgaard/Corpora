@@ -148,8 +148,7 @@ class Analyser:
                 ngram.counts[entry] += 1
 
 
-class WortschatzAnalyser(Analyser):
-
+class WortschatzAnalyser(Analyser)
     # def to_counts():
     #     ...
 

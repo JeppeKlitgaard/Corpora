@@ -1,0 +1,29 @@
+{
+  "sources": [
+    {
+      "id": "deu_news_1995_10K",
+      "weight": 0.33,
+      "type": "analysis"
+    },
+    {
+      "id": "deu_news_2010_100K",
+      "weight": 0.33,
+      "type": "analysis"
+    },
+    {
+      "id": "eng_news_2018_30K",
+      "weight": 0.33,
+      "type": "analysis"
+    }
+  ],
+
+  "metadata": {
+    "id": "wortschatz.german",
+    "name": "German (Wortschatz)",
+    "languages": ["german"],
+    "version": "0.0.1",
+    "extra": {
+      "a": "b"
+    }
+  }
+}
