@@ -124,6 +124,9 @@ impl OccuranceAnalysis<f64> {
             .values_mut()
             .chain(self.skipgrams.values_mut())
             .for_each(|occurances| occurances.normalize());
+
+        // Normalise occurances of words
+        self.words.normalize();
     }
 }
 
