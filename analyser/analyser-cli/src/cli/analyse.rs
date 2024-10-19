@@ -7,12 +7,14 @@ use crate::{
 use chrono::{self};
 use data_encoding::HEXUPPER;
 use eyre::{eyre, Result};
+use humantime::format_duration;
 use rayon::prelude::*;
 use ring::digest::Digest;
 use std::{
     fs::{read_to_string, File},
     io::{BufWriter, Write},
     path::{Path, PathBuf},
+    time::Instant,
 };
 use url::Url;
 
@@ -32,6 +34,7 @@ pub fn wortschatz(
     show_progress: bool,
     force: bool,
 ) -> Result<()> {
+    let start_time = Instant::now();
     println!("Analysing corpus: '{id}'...");
 
     // Fetch sentences
@@ -99,10 +102,44 @@ pub fn wortschatz(
     serde_json::to_writer_pretty(&mut analysis_file_buf, &analysis)?;
     analysis_file_buf.flush()?;
 
-    println!(
-        "Finished analysing corpus. Analysis stored in {}",
-        analysis_path.display()
-    );
+    let analysis_stats_strs_sentences_words = vec![
+        format!("{} sentences", analysis.analysis.num_sentences),
+        format!("{} words", analysis.analysis.words.sum()),
+    ];
+
+    let analysis_stats_strs_ngrams: Vec<_> = analysis
+        .analysis
+        .ngrams
+        .iter()
+        .map(|(n, x)| format!("{} {}-grams", x.sum(), n))
+        .collect();
+
+    let analysis_stats_strs_skipgrams: Vec<_> = analysis
+        .analysis
+        .skipgrams
+        .iter()
+        .map(|(n, x)| format!("{} {}-skipgrams", x.sum(), n))
+        .collect();
+
+    let mut analysis_stats_strs = Vec::<_>::new();
+    analysis_stats_strs.extend(analysis_stats_strs_sentences_words);
+    analysis_stats_strs.extend(analysis_stats_strs_ngrams);
+    analysis_stats_strs.extend(analysis_stats_strs_skipgrams);
+
+    let mut analysis_stat_str = analysis_stats_strs.join(", ");
+
+    let analysis_rate =
+        analysis.analysis.num_sentences as f64 / start_time.elapsed().as_secs_f64();
+
+    let elapsed_time = start_time.elapsed();
+    analysis_stat_str.push_str(&format!(
+        " analysed in {} ({:.2} sentences/sec)",
+        format_duration(elapsed_time),
+        analysis_rate
+    ));
+
+    println!("Finished analysing corpus: {}", analysis_stat_str);
+    println!("Analysis stored in {}", analysis_path.display());
 
     Ok(())
 }
