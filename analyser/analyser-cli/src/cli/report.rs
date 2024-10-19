@@ -6,10 +6,10 @@ use eyre::Result;
 use eyre::WrapErr;
 
 use crate::objects::analysis::Analysis;
+use crate::objects::report::{Report, ReportMetadata, ReportRecipe, ReportSourceType};
 use crate::occurance::OccuranceAnalysis;
 use crate::transforms::TransformSpecification;
 use crate::utils::read_json;
-use crate::objects::report::{Report, ReportMetadata, ReportRecipe, ReportSourceType};
 
 impl Report {
     pub fn from_path(path: &Path) -> Result<Self> {
@@ -71,7 +71,6 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
         // Calculate ngram frequencies
         analysis_counts += analysis.clone();
         analysis_weighted_counts += analysis * (source.weight / total_weight);
-
     }
 
     // Establish frequencies
@@ -91,7 +90,6 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
         version: recipe.metadata.version.clone(),
         extra: recipe.metadata.extra.clone(),
         process_date: Utc::now(),
-
     };
     let report = Report {
         metadata: metadata,
@@ -109,7 +107,10 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
     serde_json::to_writer_pretty(&mut report_file_buf, &report)?;
     report_file_buf.flush()?;
 
-    println!("Finished making report. Report stored in {}", report_path.display());
+    println!(
+        "Finished making report. Report stored in {}",
+        report_path.display()
+    );
 
     Ok(())
 }

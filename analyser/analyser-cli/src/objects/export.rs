@@ -5,7 +5,6 @@ use crate::occurance::Countable;
 
 use super::report::Report;
 
-
 #[derive(Serialize, Debug)]
 pub struct OxeylyserLanguageData {
     pub language: String,

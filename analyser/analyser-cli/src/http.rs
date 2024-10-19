@@ -1,4 +1,8 @@
-use std::{fs::File, io::{Write, BufReader, BufWriter, BufRead}, path::{PathBuf, Path}};
+use std::{
+    fs::File,
+    io::{BufRead, BufReader, BufWriter, Write},
+    path::{Path, PathBuf},
+};
 
 use eyre::{eyre, Result};
 use flate2::read::GzDecoder;

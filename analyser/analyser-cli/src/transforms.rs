@@ -1,7 +1,6 @@
-use crate::{occurance::{Countable, OccuranceT, Occurances, OccuranceAnalysis}};
+use crate::occurance::{Countable, OccuranceAnalysis, OccuranceT, Occurances};
 
-
-impl <T: OccuranceT> Occurances<T> {
+impl<T: OccuranceT> Occurances<T> {
     pub fn strip(&mut self, replace: bool, check: impl Fn(&Countable) -> (bool, Countable)) {
         let keys: Vec<Countable> = self.keys().cloned().collect();
         for key in keys {
@@ -9,14 +8,16 @@ impl <T: OccuranceT> Occurances<T> {
             if strip {
                 let value = self.swap_remove(&key).unwrap();
                 if replace {
-                    self.entry(new_key).and_modify(|v| *v += value).or_insert(value);
+                    self.entry(new_key)
+                        .and_modify(|v| *v += value)
+                        .or_insert(value);
                 }
             }
         }
     }
 }
 
-impl <T: OccuranceT> OccuranceAnalysis<T> {
+impl<T: OccuranceT> OccuranceAnalysis<T> {
     pub fn strip(&mut self, check: impl Fn(&Countable) -> (bool, Countable)) {
         // For ngrams and skipgrams we just strip invalid entries
         self.ngrams
@@ -83,8 +84,12 @@ mod tests {
 
     #[test]
     fn test_strip() {
-        let mut occurances_replace: Occurances<usize> = vec![("a ".into(), 2), ("a".into(), 1)].into_iter().collect();
-        let mut occurances_strip: Occurances<usize> = vec![("a ".into(), 2), ("a".into(), 1)].into_iter().collect();
+        let mut occurances_replace: Occurances<usize> = vec![("a ".into(), 2), ("a".into(), 1)]
+            .into_iter()
+            .collect();
+        let mut occurances_strip: Occurances<usize> = vec![("a ".into(), 2), ("a".into(), 1)]
+            .into_iter()
+            .collect();
 
         occurances_replace.strip(true, &check_whitespace);
         occurances_strip.strip(false, &check_whitespace);

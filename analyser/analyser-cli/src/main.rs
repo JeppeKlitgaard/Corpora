@@ -2,16 +2,15 @@
 
 use eyre::Result;
 
+mod analyse;
 mod cli;
+mod crypt;
 mod http;
 mod io;
-mod analyse;
 mod objects;
-mod crypt;
-mod utils;
 mod occurance;
 mod transforms;
-
+mod utils;
 
 fn main() -> Result<()> {
     cli::run()

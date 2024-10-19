@@ -128,8 +128,7 @@ pub fn wortschatz(
 
     let mut analysis_stat_str = analysis_stats_strs.join(", ");
 
-    let analysis_rate =
-        analysis.analysis.num_sentences as f64 / start_time.elapsed().as_secs_f64();
+    let analysis_rate = analysis.analysis.num_sentences as f64 / start_time.elapsed().as_secs_f64();
 
     let elapsed_time = start_time.elapsed();
     analysis_stat_str.push_str(&format!(
