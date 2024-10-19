@@ -82,6 +82,7 @@ pub fn analyse(
                     .map(|x| Countable::from(x))
                     .collect();
                 occ_analysis.words += words.into();
+                occ_analysis.num_sentences += 1;
 
                 if show_progress {
                     progress
@@ -112,6 +113,7 @@ pub fn analyse(
                 }
 
                 occ_analysis1.words += occ_analysis2.words;
+                occ_analysis1.num_sentences += occ_analysis2.num_sentences;
 
                 occ_analysis1
             },

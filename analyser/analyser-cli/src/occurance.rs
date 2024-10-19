@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::iter::Sum;
 use std::ops::{AddAssign, Mul};
 
 use counter::Counter;
@@ -15,7 +16,7 @@ pub trait NGramLikeT = AddAssign + Send + Copy + Default;
 
 pub type Countable = SmartString<LazyCompact>;
 pub trait OccuranceT =
-    num_traits::Zero + num_traits::One + PartialOrd + Default + AddAssign + Send + Copy;
+    num_traits::Zero + num_traits::One + PartialOrd + Default + AddAssign + Send + Copy + Sum;
 
 pub type OccuranceCounter = Counter<Countable, usize>;
 /// This is simply used to efficiently do the counting within a thread
@@ -26,6 +27,10 @@ impl<T: OccuranceT> Occurances<T> {
     pub fn new() -> Occurances<T> {
         let counter: IndexMap<Countable, T> = IndexMap::new();
         Self(counter)
+    }
+
+    pub fn sum(&self) -> T {
+        self.0.values().cloned().sum()
     }
 
     delegate! {
@@ -97,6 +102,7 @@ where
     pub ngrams: NOccurances<T>,
     pub skipgrams: NOccurances<T>,
     pub words: Occurances<T>,
+    pub num_sentences: usize,
 }
 
 impl<T> OccuranceAnalysis<T>
@@ -137,6 +143,7 @@ where
         }
 
         self.words += other.words;
+        self.num_sentences += other.num_sentences;
     }
 }
 
@@ -170,8 +177,9 @@ where
         let ngrams: NOccurances<f64> = ngrams.collect();
         let skipgrams: NOccurances<f64> = skipgrams.collect();
         let words: Occurances<f64> = words.collect();
+        let num_sentences = self.num_sentences;
 
-        OccuranceAnalysis { ngrams, skipgrams, words }
+        OccuranceAnalysis { ngrams, skipgrams, words, num_sentences }
     }
 }
 
