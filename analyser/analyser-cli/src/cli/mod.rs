@@ -105,10 +105,16 @@ struct ExportArgs {
 #[derive(Debug, Subcommand)]
 enum ExportCommands {
     Oxeylyzer(ExportOxeylyzerArgs),
+    Cmini(ExportCminiArgs),
 }
 
 #[derive(Debug, Args)]
 struct ExportOxeylyzerArgs {
+    report: PathBuf,
+}
+
+#[derive(Debug, Args)]
+struct ExportCminiArgs {
     report: PathBuf,
 }
 
@@ -151,6 +157,11 @@ pub fn run() -> Result<()> {
             ExportCommands::Oxeylyzer(oxey_args) => {
                 let report = Report::from_path(&oxey_args.report)?;
                 export::export_oxeylyzer(&report, work_dir, e_args.force)?;
+                return Ok(());
+            },
+            ExportCommands::Cmini(cmini_args) => {
+                let report = Report::from_path(&cmini_args.report)?;
+                export::export_cmini(&report, work_dir, e_args.force)?;
                 return Ok(());
             }
         },
