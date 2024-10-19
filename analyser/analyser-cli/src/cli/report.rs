@@ -57,6 +57,7 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
                     ?;
 
                 analysis.analysis.transform(&trans_spec);
+                analysis.analysis.sort();
                 analysis.analysis
             }
             ReportSourceType::Report => {
