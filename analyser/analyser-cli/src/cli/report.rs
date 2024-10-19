@@ -7,6 +7,7 @@ use eyre::WrapErr;
 
 use crate::objects::analysis::Analysis;
 use crate::occurance::OccuranceAnalysis;
+use crate::transforms::TransformSpecification;
 use crate::utils::read_json;
 use crate::objects::report::{Report, ReportMetadata, ReportRecipe, ReportSourceType};
 
@@ -37,15 +38,24 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
 
     for source in &recipe.sources {
         let id = &source.id;
+        let trans_spec = TransformSpecification {
+            strip_whitespace: source.strip_whitespace,
+            strip_punctuation: source.strip_punctuation,
+            strip_numbers: source.strip_numbers,
+            strip_nonlatin: source.strip_nonlatin,
+        };
+
         let analysis: OccuranceAnalysis<usize> = match source.type_ {
             ReportSourceType::Analysis => {
                 let mut analysis_path = working_directory.to_owned();
                 analysis_path.push(&id);
                 analysis_path.push("analysis.json");
 
-                let analysis: Analysis = read_json(&analysis_path)
+                let mut analysis: Analysis = read_json(&analysis_path)
                     .wrap_err_with(|| format!("Error reading analysis for ID '{}'. Maybe you didn't fetch and analyse this yet?", id))
                     ?;
+
+                analysis.analysis.transform(&trans_spec);
                 analysis.analysis
             }
             ReportSourceType::Report => {

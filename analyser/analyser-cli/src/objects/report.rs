@@ -48,6 +48,18 @@ pub struct ReportSource {
 
     #[serde(rename = "type")]
     pub type_: ReportSourceType,
+
+    #[serde(default)]
+    pub strip_whitespace: bool,
+
+    #[serde(default)]
+    pub strip_punctuation: bool,
+
+    #[serde(default)]
+    pub strip_numbers: bool,
+
+    #[serde(default)]
+    pub strip_nonlatin: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

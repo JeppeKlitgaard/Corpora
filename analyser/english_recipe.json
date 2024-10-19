@@ -3,17 +3,29 @@
     {
       "id": "deu_news_1995_10K",
       "weight": 0.33,
-      "type": "analysis"
+      "type": "analysis",
+      "strip_whitespace": true,
+      "strip_punctuation": true,
+      "strip_numbers": true,
+      "strip_nonlatin": true
     },
     {
       "id": "deu_news_2010_100K",
       "weight": 0.33,
-      "type": "analysis"
+      "type": "analysis",
+      "strip_whitespace": true,
+      "strip_punctuation": true,
+      "strip_numbers": true,
+      "strip_nonlatin": true
     },
     {
       "id": "eng_news_2018_30K",
       "weight": 0.33,
-      "type": "analysis"
+      "type": "analysis",
+      "strip_whitespace": true,
+      "strip_punctuation": true,
+      "strip_numbers": true,
+      "strip_nonlatin": true
     }
   ],
 

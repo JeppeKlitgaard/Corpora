@@ -37,11 +37,13 @@ impl<T: OccuranceT> Occurances<T> {
         to self.0 {
             pub fn into_iter(self) -> impl Iterator<Item = (Countable, T)>;
             pub fn iter_mut(&mut self) -> impl Iterator<Item = (&Countable, &mut T)>;
+            pub fn get(&self, key: &Countable) -> Option<&T>;
             pub fn keys(&self) -> Keys<Countable, T>;
             pub fn entry(&mut self, key: Countable) -> Entry<Countable, T>;
             pub fn par_sort_by<F>(&mut self, cmp: F)
                 where F: Fn(&Countable, &T, &Countable, &T) -> Ordering + Sync;
-            }
+            pub fn swap_remove(&mut self, key: &Countable) -> Option<T>;
+        }
     }
 }
 
@@ -115,7 +117,8 @@ where
             occurance.par_sort_by(|_, v1, _, v2| v2.partial_cmp(v1).unwrap());
         });
 
-        self.words.par_sort_by(|_, v1, _, v2| v2.partial_cmp(v1).unwrap());
+        self.words
+            .par_sort_by(|_, v1, _, v2| v2.partial_cmp(v1).unwrap());
     }
 }
 
@@ -184,7 +187,12 @@ where
         let words: Occurances<f64> = words.collect();
         let num_sentences = self.num_sentences;
 
-        OccuranceAnalysis { ngrams, skipgrams, words, num_sentences }
+        OccuranceAnalysis {
+            ngrams,
+            skipgrams,
+            words,
+            num_sentences,
+        }
     }
 }
 
