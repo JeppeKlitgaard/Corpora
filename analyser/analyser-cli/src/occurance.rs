@@ -114,6 +114,8 @@ where
         occurances.for_each(|occurance| {
             occurance.par_sort_by(|_, v1, _, v2| v2.partial_cmp(v1).unwrap());
         });
+
+        self.words.par_sort_by(|_, v1, _, v2| v2.partial_cmp(v1).unwrap());
     }
 }
 
