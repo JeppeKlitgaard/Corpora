@@ -7,7 +7,7 @@ impl<T: OccuranceT> Occurances<T> {
             let (strip, new_key) = check(&key);
             if strip {
                 let value = self.swap_remove(&key).unwrap();
-                if replace {
+                if replace && new_key.len() > 0 {
                     self.entry(new_key)
                         .and_modify(|v| *v += value)
                         .or_insert(value);
