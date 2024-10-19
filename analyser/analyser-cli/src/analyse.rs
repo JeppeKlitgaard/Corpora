@@ -3,9 +3,7 @@ use rayon::prelude::*;
 use std::sync::Mutex;
 use unicode_segmentation::UnicodeSegmentation;
 
-use crate::occurance::{
-    Countable, OccuranceAnalysis, OccuranceCounter, Occurances,
-};
+use crate::occurance::{Countable, OccuranceAnalysis, OccuranceCounter, Occurances};
 
 pub fn analyse(
     sentences: &Vec<String>,
@@ -79,6 +77,12 @@ pub fn analyse(
                     *skipgrams_entry += skipgrams_map;
                 });
 
+                let words: OccuranceCounter = sentence
+                    .split_whitespace()
+                    .map(|x| Countable::from(x))
+                    .collect();
+                occ_analysis.words += words.into();
+
                 if show_progress {
                     progress
                         .as_ref()
@@ -106,13 +110,14 @@ pub fn analyse(
 
                     *entry1 += entry2.clone();
                 }
+
+                occ_analysis1.words += occ_analysis2.words;
+
                 occ_analysis1
             },
         );
 
     occ_analysis.sort();
-
-    dbg!(&occ_analysis);
 
     // ngrams
     occ_analysis

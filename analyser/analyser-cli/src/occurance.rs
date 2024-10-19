@@ -96,6 +96,7 @@ where
 {
     pub ngrams: NOccurances<T>,
     pub skipgrams: NOccurances<T>,
+    pub words: Occurances<T>,
 }
 
 impl<T> OccuranceAnalysis<T>
@@ -134,6 +135,8 @@ where
             let entry = self.skipgrams.entry(n).or_default();
             *entry += occurance;
         }
+
+        self.words += other.words;
     }
 }
 
@@ -159,10 +162,16 @@ where
             (n, new_counter)
         });
 
+        let words = self
+            .words
+            .into_iter()
+            .map(|(s, count)| (s, NumCast::from(count).unwrap_or(0.0) * rhs));
+
         let ngrams: NOccurances<f64> = ngrams.collect();
         let skipgrams: NOccurances<f64> = skipgrams.collect();
+        let words: Occurances<f64> = words.collect();
 
-        OccuranceAnalysis { ngrams, skipgrams }
+        OccuranceAnalysis { ngrams, skipgrams, words }
     }
 }
 
