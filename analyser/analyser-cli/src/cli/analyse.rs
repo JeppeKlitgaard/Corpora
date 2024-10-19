@@ -39,6 +39,7 @@ pub fn wortschatz(
 
     // Fetch sentences
     let mut corpus_path: PathBuf = working_directory.to_owned();
+    corpus_path.push("data");
     corpus_path.push(id);
 
     let mut sentences_path = corpus_path.clone();

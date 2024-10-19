@@ -48,6 +48,7 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
         let analysis: OccuranceAnalysis<usize> = match source.type_ {
             ReportSourceType::Analysis => {
                 let mut analysis_path = working_directory.to_owned();
+                analysis_path.push("data");
                 analysis_path.push(&id);
                 analysis_path.push("analysis.json");
 
