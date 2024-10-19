@@ -11,7 +11,10 @@ use tar::Archive;
 use url::Url;
 
 fn get_response(url: Url) -> Result<reqwest::blocking::Response> {
-    let resp = reqwest::blocking::get(url.clone())?;
+    let client = reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(60*60*24))
+        .build()?;
+    let resp = client.get(url.clone()).send()?;
 
     let status = resp.status();
     if !resp.status().is_success() {
