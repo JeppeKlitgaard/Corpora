@@ -5,8 +5,6 @@ use serde_json::Value;
 
 use crate::occurance::OccuranceAnalysis;
 
-use super::analysis::AnalysisSource;
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Report {
     pub metadata: ReportMetadata,
