@@ -79,6 +79,17 @@ where
     }
 }
 
+impl From<Occurances<f64>> for Occurances<usize> {
+    fn from(occurances: Occurances<f64>) -> Self {
+        let inner: IndexMap<Countable, usize> = occurances
+            .0
+            .into_iter()
+            .map(|(k, v)| (k, v as usize))
+            .collect();
+        Self(inner)
+    }
+}
+
 impl<T> AddAssign for Occurances<T>
 where
     T: OccuranceT,
@@ -186,6 +197,32 @@ where
         let skipgrams: NOccurances<f64> = skipgrams.collect();
         let words: Occurances<f64> = words.collect();
         let num_sentences = self.num_sentences;
+
+        OccuranceAnalysis {
+            ngrams,
+            skipgrams,
+            words,
+            num_sentences,
+        }
+    }
+}
+
+impl From<OccuranceAnalysis<f64>> for OccuranceAnalysis<usize> {
+    fn from(occurance_analysis: OccuranceAnalysis<f64>) -> Self {
+        let ngrams = occurance_analysis
+            .ngrams
+            .into_iter()
+            .map(|(n, counter)| (n, counter.into()))
+            .collect();
+
+        let skipgrams = occurance_analysis
+            .skipgrams
+            .into_iter()
+            .map(|(n, counter)| (n, counter.into()))
+            .collect();
+
+        let words = occurance_analysis.words.into();
+        let num_sentences = occurance_analysis.num_sentences;
 
         OccuranceAnalysis {
             ngrams,

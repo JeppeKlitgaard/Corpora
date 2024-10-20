@@ -89,6 +89,9 @@ pub fn report(id: &str, working_directory: &Path) -> Result<()> {
     let mut analysis_weighted_frequencies = analysis_weighted_counts.clone();
     analysis_weighted_frequencies.normalize();
 
+    // Restore counts as a usize
+    let mut analysis_weighted_counts: OccuranceAnalysis<usize> = analysis_weighted_counts.into();
+
     // Sort
     analysis_counts.sort();
     analysis_weighted_counts.sort();
@@ -107,7 +110,7 @@ pub fn report(id: &str, working_directory: &Path) -> Result<()> {
         metadata: metadata,
         sources: recipe.sources,
         count: 0,
-        analysis_counts: analysis_counts,
+        analysis_counts: analysis_weighted_counts,
         analysis_frequencies: analysis_weighted_frequencies,
     };
 
