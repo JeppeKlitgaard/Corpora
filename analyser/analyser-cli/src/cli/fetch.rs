@@ -9,7 +9,8 @@ use crate::http::download_and_decompress_archive;
 
 pub fn wortschatz(id: &str, working_directory: &Path, force: bool) -> Result<()> {
     let mut sentences_path: PathBuf = working_directory.to_owned();
-    sentences_path.push("data");
+    sentences_path.push("fetch");
+    sentences_path.push("wortschatz");
     sentences_path.push(id);
     sentences_path.push("sentences.txt");
 

@@ -41,7 +41,7 @@ enum Commands {
     Analyse(AnalyseArgs),
 
     #[command(arg_required_else_help = true)]
-    Report { recipe: PathBuf },
+    Report { id: String },
     #[command(arg_required_else_help = true)]
     Export(ExportArgs),
 }
@@ -111,11 +111,13 @@ enum ExportCommands {
 #[derive(Debug, Args)]
 struct ExportOxeylyzerArgs {
     report: PathBuf,
+    output: PathBuf,
 }
 
 #[derive(Debug, Args)]
 struct ExportCminiArgs {
     report: PathBuf,
+    output: PathBuf,
 }
 
 pub fn run() -> Result<()> {
@@ -152,13 +154,13 @@ pub fn run() -> Result<()> {
                 return Ok(());
             }
         },
-        Commands::Report { recipe } => report::report(&recipe, work_dir),
+        Commands::Report { id } => report::report(&id, work_dir),
         Commands::Export(e_args) => match e_args.command {
             ExportCommands::Oxeylyzer(oxey_args) => {
                 let report = Report::from_path(&oxey_args.report)?;
                 export::export_oxeylyzer(&report, work_dir, e_args.force)?;
                 return Ok(());
-            },
+            }
             ExportCommands::Cmini(cmini_args) => {
                 let report = Report::from_path(&cmini_args.report)?;
                 export::export_cmini(&report, work_dir, e_args.force)?;

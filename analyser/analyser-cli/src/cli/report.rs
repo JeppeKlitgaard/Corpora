@@ -1,3 +1,4 @@
+use std::fs::create_dir_all;
 use std::io::{BufWriter, Write};
 use std::{fs::File, io::BufReader, path::Path};
 
@@ -29,8 +30,17 @@ pub fn read_recipe(path: &Path) -> Result<ReportRecipe> {
     Ok(recipe)
 }
 
-pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
-    let recipe = read_recipe(recipe_path)?;
+pub fn report(id: &str, working_directory: &Path) -> Result<()> {
+    let mut recipe_path = working_directory.to_owned();
+    recipe_path.push("recipe");
+    recipe_path.push(format!("{id}.json"));
+
+    let mut output_path = working_directory.to_owned();
+    output_path.push("report");
+    output_path.push(format!("{id}.json"));
+    let _ = create_dir_all(&output_path.parent().unwrap());
+
+    let recipe = read_recipe(&recipe_path)?;
 
     let total_weight: f64 = recipe.sources.iter().map(|x| x.weight).sum();
     let mut analysis_counts = OccuranceAnalysis::<usize>::default();
@@ -48,7 +58,7 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
         let analysis: OccuranceAnalysis<usize> = match source.type_ {
             ReportSourceType::Analysis => {
                 let mut analysis_path = working_directory.to_owned();
-                analysis_path.push("data");
+                analysis_path.push("analysis");
                 analysis_path.push(&id);
                 analysis_path.push("analysis.json");
 
@@ -101,8 +111,7 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
         analysis_frequencies: analysis_weighted_frequencies,
     };
 
-    let report_path = recipe_path.parent().unwrap().join("report.json");
-    let report_file = File::create(&report_path)?;
+    let report_file = File::create(&output_path)?;
 
     let mut report_file_buf = BufWriter::new(report_file);
 
@@ -111,7 +120,7 @@ pub fn report(recipe_path: &Path, working_directory: &Path) -> Result<()> {
 
     println!(
         "Finished making report. Report stored in {}",
-        report_path.display()
+        &output_path.display()
     );
 
     Ok(())

@@ -13,7 +13,7 @@ use ring::digest::Digest;
 use std::{
     fs::{read_to_string, File},
     io::{BufWriter, Write},
-    path::{Path, PathBuf},
+    path::Path,
     time::Instant,
 };
 use url::Url;
@@ -38,11 +38,10 @@ pub fn wortschatz(
     println!("Analysing corpus: '{id}'...");
 
     // Fetch sentences
-    let mut corpus_path: PathBuf = working_directory.to_owned();
-    corpus_path.push("data");
-    corpus_path.push(id);
-
-    let mut sentences_path = corpus_path.clone();
+    let mut sentences_path = working_directory.to_owned();
+    sentences_path.push("fetch");
+    sentences_path.push("wortschatz");
+    sentences_path.push(id);
     sentences_path.push("sentences.txt");
 
     if !sentences_path.exists() {
@@ -52,7 +51,9 @@ pub fn wortschatz(
         ));
     }
 
-    let mut analysis_path = corpus_path.clone();
+    let mut analysis_path = working_directory.to_owned();
+    analysis_path.push("analysis");
+    analysis_path.push(id);
     analysis_path.push("analysis.json");
 
     let existing_sha256: Result<String> =

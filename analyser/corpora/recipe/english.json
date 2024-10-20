@@ -1,0 +1,39 @@
+{
+  "sources": [
+    {
+      "id": "eng_wikipedia_2016_1M",
+      "weight": 1.0,
+      "type": "analysis",
+      "strip_whitespace": true,
+      "strip_punctuation": true,
+      "strip_numbers": true,
+      "strip_nonlatin": true
+    },
+    {
+      "id": "eng-uk_web-public_2018_1M",
+      "weight": 1.0,
+      "type": "analysis",
+      "strip_whitespace": true,
+      "strip_punctuation": true,
+      "strip_numbers": true,
+      "strip_nonlatin": true
+    },
+    {
+      "id": "eng_news_2023_1M",
+      "weight": 1.0,
+      "type": "analysis",
+      "strip_whitespace": true,
+      "strip_punctuation": true,
+      "strip_numbers": true,
+      "strip_nonlatin": true
+    }
+  ],
+
+  "metadata": {
+    "id": "wortschatz.english",
+    "name": "English (Wortschatz)",
+    "languages": ["english"],
+    "version": "0.0.1",
+    "extra": {}
+  }
+}

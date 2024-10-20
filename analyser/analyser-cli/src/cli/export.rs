@@ -1,9 +1,14 @@
 use eyre::Result;
 use std::{
-    fs::{create_dir, File}, io::Write, path::{Path, PathBuf}
+    fs::{create_dir, File},
+    io::Write,
+    path::{Path, PathBuf},
 };
 
-use crate::objects::{export::{CminiLanguageData, OxeylyserLanguageData}, report::Report};
+use crate::objects::{
+    export::{CminiLanguageData, OxeylyserLanguageData},
+    report::Report,
+};
 
 pub fn export_oxeylyzer(report: &Report, working_directory: &Path, force: bool) -> Result<()> {
     let oxey_output = OxeylyserLanguageData::from_report(report);
