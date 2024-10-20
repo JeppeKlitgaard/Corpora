@@ -1,27 +1,18 @@
 {
   "sources": [
     {
-      "id": "dan_wikipedia_2021_1M",
-      "weight": 1.0,
-      "type": "analysis",
+      "id": "danish",
+      "weight": 0.2,
+      "type": "report",
       "strip_whitespace": true,
       "strip_punctuation": true,
       "strip_numbers": true,
       "strip_nonlatin": true
     },
     {
-      "id": "dan-dk_web_2019_1M",
-      "weight": 1.0,
-      "type": "analysis",
-      "strip_whitespace": true,
-      "strip_punctuation": true,
-      "strip_numbers": true,
-      "strip_nonlatin": true
-    },
-    {
-      "id": "dan_news_2021_1M",
-      "weight": 1.0,
-      "type": "analysis",
+      "id": "english",
+      "weight": 0.8,
+      "type": "report",
       "strip_whitespace": true,
       "strip_punctuation": true,
       "strip_numbers": true,
@@ -30,9 +21,9 @@
   ],
 
   "metadata": {
-    "id": "wortschatz.dan",
-    "name": "Danish (Wortishschatz)",
-    "languages": ["Danish"],
+    "id": "custom.jk.mix",
+    "name": "JK Mix",
+    "languages": ["danish", "english"],
     "version": "0.0.1",
     "extra": {}
   }
