@@ -33,22 +33,3 @@ impl OxeylyserLanguageData {
         }
     }
 }
-
-#[derive(Serialize, Debug)]
-pub struct CminiLanguageData {
-    pub monograms: IndexMap<Countable, usize>,
-    pub bigrams: IndexMap<Countable, usize>,
-    pub trigrams: IndexMap<Countable, usize>,
-    pub words: IndexMap<Countable, usize>,
-}
-
-impl CminiLanguageData {
-    pub fn from_report(report: &Report) -> Self {
-        Self {
-            monograms: report.analysis_counts.ngrams[&1].clone().into(),
-            bigrams: report.analysis_counts.ngrams[&2].clone().into(),
-            trigrams: report.analysis_counts.ngrams[&3].clone().into(),
-            words: report.analysis_counts.words.clone().into(),
-        }
-    }
-}
