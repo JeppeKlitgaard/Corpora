@@ -53,8 +53,7 @@ pub fn wortschatz(
 
     let mut analysis_path = working_directory.to_owned();
     analysis_path.push("analysis");
-    analysis_path.push(id);
-    analysis_path.push("analysis.json");
+    analysis_path.push(format!("{}.json", &id));
 
     let existing_sha256: Result<String> =
         (|| Ok(read_json::<Analysis>(&analysis_path)?.source.hash))();

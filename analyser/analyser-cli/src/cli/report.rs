@@ -20,6 +20,14 @@ impl Report {
 
         Ok(report)
     }
+
+    pub fn from_id(id: &str, working_directory: &Path) -> Result<Self> {
+        let mut report_path = working_directory.to_owned();
+        report_path.push("report");
+        report_path.push(format!("{id}.json"));
+
+        Self::from_path(&report_path)
+    }
 }
 
 pub fn read_recipe(path: &Path) -> Result<ReportRecipe> {
@@ -59,8 +67,7 @@ pub fn report(id: &str, working_directory: &Path) -> Result<()> {
             ReportSourceType::Analysis => {
                 let mut analysis_path = working_directory.to_owned();
                 analysis_path.push("analysis");
-                analysis_path.push(&id);
-                analysis_path.push("analysis.json");
+                analysis_path.push(format!("{}.json", &id));
 
                 let mut analysis: Analysis = read_json(&analysis_path)
                     .wrap_err_with(|| format!("Error reading analysis for ID '{}'. Maybe you didn't fetch and analyse this yet?", id))
@@ -72,12 +79,15 @@ pub fn report(id: &str, working_directory: &Path) -> Result<()> {
             }
             ReportSourceType::Report => {
                 let mut report_path = working_directory.to_owned();
-                report_path.push("reports");
+                report_path.push("report");
                 report_path.push(format!("{id}.json"));
 
-                let _report: Report = read_json(&report_path)?;
-                todo!();
-                // report.ngram_counts
+                let report: Report = read_json(&report_path).wrap_err_with(|| format!("Error reading report for ID '{}'. Maybe you didn't generate the report for this this yet?", id))?;
+                let mut analysis = report.analysis_counts;
+
+                analysis.transform(&trans_spec);
+                analysis.sort();
+                analysis
             }
         };
         // Calculate ngram frequencies

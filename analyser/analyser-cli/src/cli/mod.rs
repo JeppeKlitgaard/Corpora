@@ -3,8 +3,6 @@ use std::{env, fs::create_dir_all, path::PathBuf};
 use clap::{Args, Parser, Subcommand};
 use eyre::Result;
 
-use crate::objects::report::Report;
-
 mod analyse;
 mod export;
 mod fetch;
